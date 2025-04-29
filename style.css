@@ -1,3 +1,4 @@
+/* Reset and container */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: sans-serif;
@@ -10,6 +11,17 @@ body {
   text-align: center;
 }
 
+/* Header */
+#game-title {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+#instructions {
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+/* Grid board */
 #board {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
