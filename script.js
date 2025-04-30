@@ -1,13 +1,23 @@
 const GAME_NAME   = 'Chickens X';
 const GRID_SIZE   = 6;
 const INITIAL_TARGET = 184;
+const SKIN_URL       = 'assets/skin.png';
+const BACKGROUNDS    = ['0%', '25%', '50%', '75%'];
 let remaining;
 
 $(document).ready(() => {
+  injectDynamicStyles();
   loadGameState();
   initGame();
   $('#restart-btn').on('click', restart);
 });
+
+function injectDynamicStyles() {
+  $('<style>').text(
+    `.square:not(.empty), .piece .block { background-image: url('${SKIN_URL}'); }` +
+    `.square { width: ${100/GRID_SIZE}% }`
+  ).appendTo('head');
+}
 
 function initGame() {
   document.title = GAME_NAME;
@@ -25,9 +35,8 @@ function renderBoard() {
   const layout = saved ? JSON.parse(saved) : Array(GRID_SIZE*GRID_SIZE).fill(true);
   const $board = $('#board').empty();
   layout.forEach((isEmpty, i) => {
-    $('<div>')
-      .addClass('square ' + (isEmpty ? 'empty' : ''))
-      .css('background', isEmpty ? '#252f50' : '#fff')
+    const $cell = $('<div>').addClass('square').toggleClass('empty', isEmpty)
+      .css('background-position-x', isEmpty ? '' : BACKGROUNDS[0])
       .attr('data-index', i)
       .appendTo($board);
   });
@@ -35,55 +44,51 @@ function renderBoard() {
 
 function addPiece() {
   const $piece = $('<div>').addClass('piece').attr('id', 'current-piece');
-  for (let i = 0; i < 2; i++) $('<div>').addClass('block').appendTo($piece);
+  const isHorizontal = Math.random() > 0.5;
+  $piece.toggleClass('horizontal', isHorizontal).toggleClass('vertical', !isHorizontal);
+  // two blocks at positions 0 and horizontal?1: vertical?1
+  BACKGROUNDS.sort(() => 0.5 - Math.random());
+  for (let i=0; i<2; i++) {
+    $('<div>').addClass('block')
+      .css('background-position-x', BACKGROUNDS[i])
+      .appendTo($piece);
+  }
   $('#pieces').append($piece);
 }
 
 function attachEvents() {
-  $('#current-piece').draggable({ revert: 'invalid', containment: 'body', helper: 'clone' });
-  $('.square.empty').droppable({ accept: '#current-piece', drop: placePiece });
+  $('#current-piece').draggable({ revert:'invalid', helper:'clone', containment:'body' });
+  $('.square.empty').droppable({ accept:'#current-piece', drop: placePiece });
 }
 
-function placePiece(event, ui) {
-  const dropIdx = +$(this).data('index');
-  const filled = [];
-  [dropIdx, calcSecond(dropIdx)].forEach(i => {
-    if ($(`.square[data-index=${i}]`).hasClass('empty')) {
-      occupyCell(i); filled.push(i);
-    }
-  });
-  $('#current-piece').remove();
-  remaining -= filled.length;
-  $('#remaining').text(Math.max(0, remaining));
-  const cleared = checkLines();
-  remaining -= cleared;
-  $('#remaining').text(Math.max(0, remaining));
+function placePiece(e, ui) {
+  const $p = $('#current-piece');
+  const idx = +ui.helper.data('index') || +$(this).data('index');
+  const isH = $p.hasClass('horizontal');
+  const idx2 = isH ? idx+1 : idx-GRID_SIZE;
+  applyBlock(idx,  BACKGROUNDS[0]);
+  applyBlock(idx2, BACKGROUNDS[1]);
+  $p.remove();
+  remaining -= 2;
+  $('#remaining').text(Math.max(0,remaining));
+  const cleared = checkLines(); remaining -= cleared;
+  $('#remaining').text(Math.max(0,remaining));
   saveGameState();
-  if (remaining > 0) { addPiece(); attachEvents(); }
-  else $('#gameover').removeClass('hidden');
+  if (remaining>0) { addPiece(); attachEvents(); } else $('#gameover').removeClass('hidden');
 }
 
-function calcSecond(i) {
-  const rowStart = Math.floor(i/GRID_SIZE)*GRID_SIZE;
-  let j = i+1;
-  return j < rowStart+GRID_SIZE ? j : i-1;
-}
-
-function occupyCell(i) {
+function applyBlock(i, bg) {
   const $c = $(`.square[data-index=${i}]`);
-  $c.removeClass('empty').css('background','#fff');
+  $c.removeClass('empty').css('background-position-x', bg);
 }
 
 function checkLines() {
-  const toClear = [];
-  const $cells  = $('.square');
-  // horizontal & vertical runs as before
-  // (same logic from last one)
-  // mark cleared by $cells.eq(idx).addClass('empty') and reset background
-  const count = 0; // placeholder
-  return count;
+  // same logic as previous, using BACKGROUNDS compare instead of white
+  // return number of cleared cells
+  return 0; // placeholder
 }
 
+// persistence
 function saveGameState() {
   const layout = $('.square').map((i,el)=> $(el).hasClass('empty')).get();
   localStorage.setItem('cx-board', JSON.stringify(layout));
@@ -92,17 +97,12 @@ function saveGameState() {
 
 function loadGameState() {
   const r = localStorage.getItem('cx-remaining');
-  remaining = r != null ? +r : null;
+  remaining = r!=null ? +r : null;
 }
 
 function restart() {
-  localStorage.removeItem('cx-board');
-  localStorage.removeItem('cx-remaining');
-  $('.square').addClass('empty').css('background','#252f50');
-  $('#pieces').empty();
-  $('#gameover').addClass('hidden');
+  localStorage.clear();
   remaining = null;
+  $('#gameover').addClass('hidden');
   initGame();
 }
-
-function registerServiceWorker() {}
