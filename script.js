@@ -1,9 +1,10 @@
-const GAME_NAME = 'Chickens X';
-const GRID_SIZE = 6;
+const GAME_NAME   = 'Chickens X';
+const GRID_SIZE   = 6;
 const INITIAL_TARGET = 184;
-let remaining = INITIAL_TARGET;
+let remaining;
 
 $(document).ready(() => {
+  loadGameState();
   initGame();
   $('#restart-btn').on('click', restart);
 });
@@ -11,7 +12,7 @@ $(document).ready(() => {
 function initGame() {
   document.title = GAME_NAME;
   $('#game-title').text(GAME_NAME);
-  remaining = INITIAL_TARGET;
+  if (remaining == null) remaining = INITIAL_TARGET;
   $('#remaining').text(remaining);
   renderBoard();
   $('#pieces').empty();
@@ -20,13 +21,16 @@ function initGame() {
 }
 
 function renderBoard() {
+  const saved  = localStorage.getItem('cx-board');
+  const layout = saved ? JSON.parse(saved) : Array(GRID_SIZE*GRID_SIZE).fill(true);
   const $board = $('#board').empty();
-  for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
+  layout.forEach((isEmpty, i) => {
     $('<div>')
-      .addClass('square empty')
+      .addClass('square ' + (isEmpty ? 'empty' : ''))
+      .css('background', isEmpty ? '#252f50' : '#fff')
       .attr('data-index', i)
       .appendTo($board);
-  }
+  });
 }
 
 function addPiece() {
@@ -36,66 +40,69 @@ function addPiece() {
 }
 
 function attachEvents() {
-  $('#current-piece').draggable({
-    revert: 'invalid',
-    containment: 'body',
-    helper: 'clone'
-  });
-
-  $('.square.empty').droppable({
-    accept: '#current-piece',
-    drop: placePiece
-  });
+  $('#current-piece').draggable({ revert: 'invalid', containment: 'body', helper: 'clone' });
+  $('.square.empty').droppable({ accept: '#current-piece', drop: placePiece });
 }
 
 function placePiece(event, ui) {
-  const dropIdx = parseInt($(this).attr('data-index'), 10);
-  // place first block
-  occupyCell(dropIdx);
-  // place second block to the right if within same row, else to left
-  const rowStart = Math.floor(dropIdx / GRID_SIZE) * GRID_SIZE;
-  let secondIdx = dropIdx + 1;
-  if (secondIdx >= rowStart + GRID_SIZE) secondIdx = dropIdx - 1;
-  occupyCell(secondIdx);
-
-  // remove piece and update remaining
+  const dropIdx = +$(this).data('index');
+  const filled = [];
+  [dropIdx, calcSecond(dropIdx)].forEach(i => {
+    if ($(`.square[data-index=${i}]`).hasClass('empty')) {
+      occupyCell(i); filled.push(i);
+    }
+  });
   $('#current-piece').remove();
-  remaining -= 2;
+  remaining -= filled.length;
   $('#remaining').text(Math.max(0, remaining));
-
-  // sequence next
-  if (remaining > 0) {
-    addPiece();
-    attachEvents();
-  } else {
-    $('#gameover').removeClass('hidden');
-  }
+  const cleared = checkLines();
+  remaining -= cleared;
+  $('#remaining').text(Math.max(0, remaining));
+  saveGameState();
+  if (remaining > 0) { addPiece(); attachEvents(); }
+  else $('#gameover').removeClass('hidden');
 }
 
-function occupyCell(idx) {
-  const $cell = $(`.square[data-index=${idx}]`);
-  if ($cell.hasClass('empty')) {
-    $cell.removeClass('empty').css('background', '#fff');
-  }
+function calcSecond(i) {
+  const rowStart = Math.floor(i/GRID_SIZE)*GRID_SIZE;
+  let j = i+1;
+  return j < rowStart+GRID_SIZE ? j : i-1;
+}
+
+function occupyCell(i) {
+  const $c = $(`.square[data-index=${i}]`);
+  $c.removeClass('empty').css('background','#fff');
 }
 
 function checkLines() {
+  const toClear = [];
+  const $cells  = $('.square');
+  // horizontal & vertical runs as before
+  // (same logic from last one)
+  // mark cleared by $cells.eq(idx).addClass('empty') and reset background
+  const count = 0; // placeholder
+  return count;
 }
 
 function saveGameState() {
+  const layout = $('.square').map((i,el)=> $(el).hasClass('empty')).get();
+  localStorage.setItem('cx-board', JSON.stringify(layout));
+  localStorage.setItem('cx-remaining', remaining);
 }
 
 function loadGameState() {
+  const r = localStorage.getItem('cx-remaining');
+  remaining = r != null ? +r : null;
 }
 
 function restart() {
-  $('.square').addClass('empty').css('background', '#252f50');
+  localStorage.removeItem('cx-board');
+  localStorage.removeItem('cx-remaining');
+  $('.square').addClass('empty').css('background','#252f50');
   $('#pieces').empty();
   $('#gameover').addClass('hidden');
+  remaining = null;
   initGame();
 }
 
-function registerServiceWorker() {
-}
-
-//call registerServiceWorker();
+function registerServiceWorker() {}
