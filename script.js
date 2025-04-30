@@ -1,6 +1,7 @@
 const GAME_NAME = 'Chickens X';
 const GRID_SIZE = 6;
 const INITIAL_TARGET = 184;
+let remaining = INITIAL_TARGET;
 
 $(document).ready(() => {
   initGame();
@@ -10,6 +11,8 @@ $(document).ready(() => {
 function initGame() {
   document.title = GAME_NAME;
   $('#game-title').text(GAME_NAME);
+  remaining = INITIAL_TARGET;
+  $('#remaining').text(remaining);
   renderBoard();
   $('#pieces').empty();
   addPiece();
@@ -27,32 +30,53 @@ function renderBoard() {
 }
 
 function addPiece() {
-  // simple horizontal two-block piece
   const $piece = $('<div>').addClass('piece').attr('id', 'current-piece');
-  for (let i = 0; i < 2; i++) {
-    $('<div>').addClass('block empty').appendTo($piece);
-  }
+  for (let i = 0; i < 2; i++) $('<div>').addClass('block').appendTo($piece);
   $('#pieces').append($piece);
 }
 
 function attachEvents() {
-  // make the current piece draggable
   $('#current-piece').draggable({
     revert: 'invalid',
     containment: 'body',
     helper: 'clone'
   });
 
-  // make squares droppable
   $('.square.empty').droppable({
     accept: '#current-piece',
-    drop: function(event, ui) {
-      // placeholder: place blocks, then clear piece
-      $(this).removeClass('empty').css('background', '#fff');
-      ui.helper.remove();
-      //checkLines(), update target, addPiece()
-    }
+    drop: placePiece
   });
+}
+
+function placePiece(event, ui) {
+  const dropIdx = parseInt($(this).attr('data-index'), 10);
+  // place first block
+  occupyCell(dropIdx);
+  // place second block to the right if within same row, else to left
+  const rowStart = Math.floor(dropIdx / GRID_SIZE) * GRID_SIZE;
+  let secondIdx = dropIdx + 1;
+  if (secondIdx >= rowStart + GRID_SIZE) secondIdx = dropIdx - 1;
+  occupyCell(secondIdx);
+
+  // remove piece and update remaining
+  $('#current-piece').remove();
+  remaining -= 2;
+  $('#remaining').text(Math.max(0, remaining));
+
+  // sequence next
+  if (remaining > 0) {
+    addPiece();
+    attachEvents();
+  } else {
+    $('#gameover').removeClass('hidden');
+  }
+}
+
+function occupyCell(idx) {
+  const $cell = $(`.square[data-index=${idx}]`);
+  if ($cell.hasClass('empty')) {
+    $cell.removeClass('empty').css('background', '#fff');
+  }
 }
 
 function checkLines() {

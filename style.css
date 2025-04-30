@@ -2,7 +2,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: sans-serif;
-  background-color:rgb(78, 26, 146);
+  background-color: rgb(78, 26, 146);
   color: #fff;
 }
 #game-container {
@@ -12,14 +12,8 @@ body {
 }
 
 /* Header */
-#game-title {
-  font-size: 24px;
-  margin-bottom: 8px;
-}
-#instructions {
-  font-size: 16px;
-  margin-bottom: 16px;
-}
+#game-title { font-size: 24px; margin-bottom: 8px; }
+#instructions { font-size: 16px; margin-bottom: 16px; }
 
 /* Grid board */
 #board {
@@ -45,11 +39,27 @@ body {
   height: 100%;
 }
 
+/* Pieces */
 #pieces {
   margin-top: 20px;
-  height: 120px;
+  min-height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+.piece {
+  display: flex;
+}
+.piece .block {
+  width: 30px;
+  height: 30px;
+  background: #fff;
+  border: 2px solid #20253b;
+  cursor: grab;
 }
 
+/* Game over */
 .hidden { display: none; }
 #gameover { margin-top: 20px; }
 #restart-btn { padding: 8px 16px; font-size: 16px; }

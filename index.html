@@ -5,12 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chickens X</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/jquery-ui.min.css">
 </head>
 <body>
   <div id="game-container">
     <header>
       <h1 id="game-title">Chickens X</h1>
-      <p id="instructions">Match pieces to connect 3!</p>
+      <p id="instructions">Place all chickens: <span id="remaining">184</span> left</p>
     </header>
     <div id="board"></div>
     <div id="pieces"></div>
@@ -22,7 +23,6 @@
 
   <script src="assets/jquery.js"></script>
   <script src="assets/jquery-ui.min.js"></script>
-  <link rel="stylesheet" href="assets/jquery-ui.min.css">
   <script src="service-worker-register.js"></script>
   <script src="script.js"></script>
 </body>
