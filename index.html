@@ -1,29 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chickens X</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chicken Out</title>
+  <meta http-equiv="Content-Language" content="en">
+  <meta name="language" content="en">
+  <meta name="description" content="So many chickens">
+
+  <meta property="og:title" content="Chicken Out">
+  <meta property="og:description" content="So many chickens">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Chickens X">
+  <meta name="twitter:description" content="So many chickens">
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2d3e75">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#2d3e75">
+  <meta name="apple-mobile-web-app-title" content="Chicken Out">
+
+  <link rel="apple-touch-icon" href="assets/icons/192x192.png">
+  <meta name="robots" content="index, follow">
+
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <div class="container hidden">
-        <div class="header">
-            <h1 class="instructions">Line up 3 chickens to rescue</h1>
-            <h1 class="score hidden"><span id="score"></span> chickens remaining</h1>
-        </div>
-
-        <div id="board"></div>
-        <div id="pieces"></div>
-
-        <div id="gameover" class="hidden">
-            <h1>GAME OVER</h1>
-            <button id="restart">PLAY AGAIN</button>
-        </div>
+  <div class="container">
+    <div class="header togglemodal">
+      <h1 class="instructions">Line up 3 chickens to rescue</h1>
+      <h1 class="score"><span id="score"></span> chickens remaining</h1>
     </div>
 
-    <script src="assets/jquery.js"></script>
-    <script src="assets/jquery-ui.min.js"></script>
-    <script src="js/game.js"></script>
+    <div id="points"></div>
+    <div id="duplicateboard"></div>
+    <div id="board"></div>
+    <div id="pieces">
+      <div id="piece" class="vertical"><div class="first" style="background-position-x: 0%"><span class="second" style="background-position-x: 25%"></span></div></div>
+    </div>
+
+    <div id="gameover" class="hidden">
+      <h1>GAME OVER</h1>
+      <button onclick="restart()" id="restart">PLAY AGAIN</button>
+    </div>
+    <div class="hidden"><div id="xye">0</div><div id="xyd">1</div><div id="xyc">0</div></div>
+
+    <div id="xpw" class="modal hidden">
+      <div class="modalinner">
+        <h1>Congratulations</h1>
+        <p>You rescued the 184 chickens in <span class="attempts"></span> attempts.</p>
+        <p>The chickens are very grateful.</p>
+        <p>Now you have rescued all the chickens you can no longer play the game. Sorry</p>
+      </div>
+    </div>
+  </div>
+  <script src="service-worker-register.js"></script>
+  <script src="assets/jquery.js"></script>
+  <script src="game.js" ></script>
 </body>
 </html>

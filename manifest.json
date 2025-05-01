@@ -1,0 +1,43 @@
+{
+    "id": "/",
+    "scope": "/",
+    "name": "Chickens",
+    "display": "standalone",
+    "start_url": "/",
+    "short_name": "Chickens",
+    "theme_color": "#2d3e75",
+    "description": "So many chickens",
+    "orientation": "portrait",
+    "background_color": "#2d3e75",
+    "prefer_related_applications": false,
+    "display_override": [
+      "window-controls-overlay"
+    ],
+    "launch_handler": {
+      "client_mode": "focus-existing"
+    },
+    "icons": [
+      {
+        "src": "assets/icons/512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      },
+      {
+        "src": "assets/icons/192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      }
+    ],
+    "features": [
+      "Strategic Gameplay",
+      "Cross-Platform",
+      "User-Friendly"
+    ],
+    "categories": [
+      "games",
+      "puzzle",
+      "strategy"
+    ],
+    "dir": "ltr",
+    "lang": "en"
+  }
