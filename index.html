@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chickens X</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="assets/jquery-ui.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chickens X</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div id="game-container">
-    <header>
-      <h1 id="game-title">Chickens X</h1>
-      <p id="instructions">Place all chickens: <span id="remaining">184</span> left</p>
-    </header>
-    <div id="board"></div>
-    <div id="pieces"></div>
-    <div id="gameover" class="hidden">
-      <h2>Game Over</h2>
-      <button id="restart-btn">Restart</button>
-    </div>
-  </div>
+    <div class="container hidden">
+        <div class="header">
+            <h1 class="instructions">Line up 3 chickens to rescue</h1>
+            <h1 class="score hidden"><span id="score"></span> chickens remaining</h1>
+        </div>
 
-  <script src="assets/jquery.js"></script>
-  <script src="assets/jquery-ui.min.js"></script>
-  <script src="service-worker-register.js"></script>
-  <script src="script.js"></script>
+        <div id="board"></div>
+        <div id="pieces"></div>
+
+        <div id="gameover" class="hidden">
+            <h1>GAME OVER</h1>
+            <button id="restart">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <script src="assets/jquery.js"></script>
+    <script src="assets/jquery-ui.min.js"></script>
+    <script src="js/game.js"></script>
 </body>
 </html>
